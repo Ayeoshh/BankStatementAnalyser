@@ -2,106 +2,126 @@ const pdfreader = require('pdfreader');
 const axios = require('axios');
 const UserDetails = require('../models/userDetailsModel');
 const TransactionHistory = require('../models/transactionHistoryModel');
+const fs = require("fs");
+const pdf = require("pdf-parse");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const dotenv = require("dotenv");
+
+dotenv.config(); // Load environment variables
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
 
 class ExtractionService{
     async  extractTextFromPdf(file){
-        try{
-            const text = await this.readPDF(file);
-            return this.parseBankStatement(text);
-        }catch(error){
-            throw new Error('error extracting text from pdf'+ error.message);
+        try {
+            const pdfData = await pdf(pdfFile.buffer);
+            return pdfData.text;
+        } catch (error) {
+            console.error("Error extracting PDF text:", error.message);
+            throw new Error("Failed to extract text from PDF");
         }
     }
-    // async extractTextFromPdf(file){
-    //     try{
-    //         const dataBuffer = file.buffer;
-    //         const data = await pdfParse(dataBuffer);
 
-    //         const extractedData = this.parsePDFData(data.text);
-    //         return extractedData;
+    async parseDataWithGemini(textData){
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const prompt = `Convert the following bank statement into structured JSON format:\n${textData}`;
+            
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            
+            return JSON.parse(response.text());
+        } catch (error) {
+            console.error("Error processing with Gemini API:", error.message);
+            throw new Error("Failed to parse data with Gemini API");
+        }
+    }
 
-    //     }catch(error){
-    //         throw new Error('Error extracting text from pdf' + error.message);
-    //     }
-    // }
-
-    async readPDF(file){
-        return new Promise((resolve, reject)=>{
-            let extractedText = '';
-            new pdfreader.PdfReader().parseBuffer(file.buffer, (err, item) =>{
-                if(err) reject(err);
-                else if(!item) resolve(extractedText);
-                else if(item.text) extractedText += item.text + " ";
+    async saveExtractedData(parsedData){
+        try {
+            // Step 1: Upsert user details
+            const userDetails = await UserDetails.upsert({
+                customerId: parsedData.customerId,
+                accountHolder: parsedData.accountHolder,
+                jointHolder: parsedData.jointHolder,
+                address: parsedData.address,
+                ifscCode: parsedData.ifscCode,
+                micrCode: parsedData.micrCode,
+                nomineeRegistered: parsedData.nomineeRegistered,
+                mobileNumber: parsedData.mobileNumber,
+                emailId: parsedData.emailId,
+                pan: parsedData.pan,
+                accountType: parsedData.accountType,
+                accountNumber: parsedData.accountNumber,
+                openingBalance: parsedData.openingBalance,
+                closingBalance: parsedData.closingBalance,
+                transactionTotalDebit: parsedData.transactionTotalDebit,
+                transactionTotalCredit: parsedData.transactionTotalCredit,
+                branchAddress: parsedData.branchAddress
             });
-        });
-    }
-    //modify this part 
-    async parseBankStatement(text){
-        const lines = text.split('\n');
+        
 
-        const customerDetails = {
-            customerId: this.extractField(lines, /Customer ID:\s+(\S+)/),
-            customerName: this.extractField(lines, /Name:\s+(.+)/),
-            bankName: this.extractField(lines, /Bank Name:\s+(.+)/),
-            ifscCode: this.extractField(lines, /IFSC Code:\s+(\S+)/),
-            pan: this.extractField(lines, /PAN:\s+(\S+)/),
-        }   
-       
+            console.log("User details saved successfully");
 
-        const transactions = [];
-        const transactionRegex = /(\d{2}-\d{2}-\d{4})\s+(\d+)?\s+([\w\s]+)\s+([\d,.]+)?\s+([\d,.]+)?\s+([\d,.]+)\s+([\w\s]+)/;
+            // Step 2: Insert Transactions
+            if (parsedData.transactions && parsedData.transactions.length > 0) {
+                const transactions = parsedData.transactions.map(transaction => ({
+                    customerId: parsedData.customerId, // Foreign key reference
+                    tranDate: transaction.tranDate,
+                    chqNo: transaction.chqNo,
+                    particulars: transaction.particulars,
+                    debit: transaction.debit,       
+                    credit: transaction.credit,
+                    balance: transaction.balance
+                }));
 
-        for (let line of lines) {
-            const match = line.match(transactionRegex);
-            if (match) {
-                transactions.push({
-                    transactionDate: new Date(match[1]),
-                    chqNo: match[2] || null,
-                    particulars: match[3].trim(),
-                    debit: match[4] ? parseFloat(match[4].replace(/,/g, "")) : null,
-                    credit: match[5] ? parseFloat(match[5].replace(/,/g, "")) : null,
-                    balance: parseFloat(match[6].replace(/,/g, "")),
-                    initBr: match[7].trim(),
-                });
+                await TransactionHistory.bulkCreate(transactions, { ignoreDuplicates: true });
+
+                console.log("Transactions saved successfully");
             }
+            try {
+                const filePath = "parsed_data.json";
+                fs.writeFileSync(filePath, JSON.stringify(parsedData, null, 2));
+                return {filePath, message: "Data saved successfully"};
+            } catch (error) {
+                console.error("Error saving parsed data:", error.message);
+                throw new Error("Failed to save extracted data");
+            }
+            // return { message: "Data saved successfully" };
+
+        } catch (error) {
+            console.error("Error saving extracted data:", error.message);
+            throw new Error("Failed to save extracted data");
         }
-
-        return { customerDetails, transactions };
-    }
-
-    async saveExtractedData(extractedData){
-        try{
-            //check if the table is already present in the database
-            const existingTable = await UserDetails.findOne({table: extractedData.tableName});
-            if(!existingTable){
+        // try {
+        //     const filePath = "parsed_data.json";
+        //     fs.writeFileSync(filePath, JSON.stringify(parsedData, null, 2));
+        //     return filePath;
+        // } catch (error) {
+        //     console.error("Error saving parsed data:", error.message);
+        //     throw new Error("Failed to save extracted data");
+        // }
+        // try{
+        //     //check if the table is already present in the database
+        //     const existingTable = await UserDetails.findOne({table: extractedData.tableName});
+        //     if(!existingTable){
                 
-            }
-            const user = await UserDetails.upsert(extractedData, customerDetails);
-            for(const transaction of extractedData.transactions){
-                await TransactionHistory.upsert({...transaction, customerId: extractedData.customerDetails.customerId});
-            }
+        //     }
+        //     const user = await UserDetails.upsert(extractedData, customerDetails);
+        //     for(const transaction of extractedData.transactions){
+        //         await TransactionHistory.upsert({...transaction, customerId: extractedData.customerDetails.customerId});
+        //     }
 
-            return {user, transactions: extractedData.transactions};
+        //     return {user, transactions: extractedData.transactions};
 
-        }catch(error){
-            throw new Error({message: 'Error saving extracted data'+ error.message});
-        }
+        // }catch(error){
+        //     throw new Error({message: 'Error saving extracted data'+ error.message});
+        // }
     }
-
-    // async extractUsingGemini(file) {
-    //     try {
-    //         const response = await axios.post("https://gemini-api-url", {
-    //             document: file.buffer.toString("base64"), // Convert PDF to Base64
-    //             model: "gemini-pro"
-    //         }, {
-    //             headers: { Authorization: `Bearer YOUR_GEMINI_API_KEY` }
-    //         });
-
-    //         return this.parseBankStatement(response.data.text);
-    //     } catch (error) {
-    //         throw new Error("Gemini API extraction failed: " + error.message);
-    //     }
-    // }
 }
 
+
+module.exports = ExtractionService;
 

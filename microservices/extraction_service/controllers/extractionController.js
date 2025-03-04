@@ -1,19 +1,20 @@
 const ExtractionService = require('../services/extractionService');
-//user multer to get the file 
+
 class ExtractionController{
     async extractAndSave(req, res){
         try{
             if(!req.file){
-                return res.return(400).json({message: 'No file uploaded'});
+                return res.status(400).json({message: 'No file uploaded'});
             }
 
-            const extractedData = await ExtractionService.extractTextFromPdf(req.file);
-
-            const saveData = await ExtractionService.saveExtractedData(extractedData);
+            const extractedText = await ExtractionService.extractTextFromPdf(req.file);
+            const parsedData = await ExtractionService.parseDataWithGemini(extractedText);
+            const savedFilePath = await ExtractionService.saveExtractedData(parsedData);
 
             res.status(200).json({
-                message: "Pdf parsed successfully",
-                data: saveData
+                message: "PDF parsed successfully",
+                filePath: savedFilePath,
+                data: parsedData
             });
         }catch(err){
             res.status(500).json({message: err.message});
