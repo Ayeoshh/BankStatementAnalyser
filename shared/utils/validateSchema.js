@@ -4,11 +4,6 @@ const addFormats = require('ajv-formats');
 const ajv = new Ajv();
 addFormats(ajv);
 
-/**
- * middleware to validate request body using json schema
- * @param {Object} schema - json schema for validation
- */
-
 const validateSchema = (schema) =>(req, res, next)=>{
     const validate = ajv.compile(schema);
     const valid = validate(req.body);

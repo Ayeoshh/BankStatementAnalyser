@@ -1,15 +1,9 @@
 const express = require('express'); 
-const dotenv = express('dotenv');
-
-const app = express();
-dotenv.config();
+const ExtractionController = require('../controllers/extractionController');
 
 const router = express.Router();
 
-
-const extractionController = ('./controllers/extractionController');
-
-router.post('/', extractionController);
+router.post('/upload', ExtractionController.extractAndSave);
 
 module.exports = router;
 

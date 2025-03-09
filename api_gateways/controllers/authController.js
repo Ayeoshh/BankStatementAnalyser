@@ -1,5 +1,5 @@
 const {validationResult} = require('express-validator');
-const AuthService = require('../services/authServices');
+const AuthService = require('../services/authService');
 require('dotenv').config();
 
 //register new user
@@ -24,7 +24,7 @@ exports.login = async (req, res)=>{
         const {email, password} = req.body;
         const response = await AuthService.loginUser(email, password);
 
-        res.status(201).json(response);
+        res.status(200).json(response);
     }catch (err){
         res.status(400).json({message: err.message});
     }

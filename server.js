@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const sequelize = require('./config/database');
 
 const app = express();
 dotenv.config();
@@ -13,6 +14,13 @@ const gateway = require('./api_gateways/gateway');
 //use of routes
 app.use('/api', gateway);
 
+// establish connection with the database
+
+sequelize.sync()
+    .then(()=>{
+        app.listen(process.env.DB_PORT, ()=>{console.log(`Server is running on port ${process.env.DB_PORT}`)});
+    })
+    .catch(err=> console.log('Error connectiong to database',err));
 
 //handle undefined routes
 app.use((req, res, next)=>{
