@@ -77,4 +77,13 @@ const UserDetails = sequelize.define('UserDetails', {
     timestamps: false
 });
 
+sequelize.sync({ force: false }) // Use force: true to drop and recreate tables (Be Careful!)
+  .then(() => {
+    console.log("Database & tables created!");
+  })
+  .catch(error => {
+    console.error("Error syncing database:", error);
+  });
+
+  
 module.exports = UserDetails;

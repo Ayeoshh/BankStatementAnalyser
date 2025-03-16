@@ -7,29 +7,16 @@ const pdf = require("pdf-parse");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const dotenv = require("dotenv");
 
-dotenv.config({path: '../../../.env'}); // Load environment variables
+dotenv.config(); // Load environment variables
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 
 class ExtractionService{
-    // async extractTextFromPdf(file){
-    //     try {
-    //         const pdfData = await pdf(file);
-    //         return pdfData.text;
-    //     } catch (error) {
-    //         console.error("Error extracting PDF text:", error.message);
-    //         throw new Error("Failed to extract text from PDF");
-    //     }
-    // }
-    async extractTextFromPdf(fileBuffer) {
+    async  extractTextFromPdf(file){
         try {
-            if (!(fileBuffer instanceof Buffer)) {
-                throw new Error("Invalid file format. Expected a Buffer.");
-            }
-
-            const pdfData = await pdf(fileBuffer);
+            const pdfData = await pdf(pdfFile.buffer);
             return pdfData.text;
         } catch (error) {
             console.error("Error extracting PDF text:", error.message);
@@ -44,24 +31,13 @@ class ExtractionService{
             
             const result = await model.generateContent(prompt);
             const response = await result.response;
-
-            // Extract response text
-            let responseText = response.text();
-    
-            // Remove possible Markdown formatting (```json ... ```)
-            responseText = responseText.replace(/```json|```/g, '').trim();
-    
-            // Convert to JSON
-            return JSON.parse(responseText);    
             
-            // return JSON.parse(response.text());
+            return JSON.parse(response.text());
         } catch (error) {
             console.error("Error processing with Gemini API:", error.message);
             throw new Error("Failed to parse data with Gemini API");
         }
     }
-    
-    
 
     async saveExtractedData(parsedData){
         try {
@@ -106,7 +82,7 @@ class ExtractionService{
                 console.log("Transactions saved successfully");
             }
             try {
-                const filePath = "parsed_testingdata.json";
+                const filePath = "parsed_data.json";
                 fs.writeFileSync(filePath, JSON.stringify(parsedData, null, 2));
                 return {filePath, message: "Data saved successfully"};
             } catch (error) {
@@ -147,5 +123,5 @@ class ExtractionService{
 }
 
 
-module.exports = new ExtractionService();
+module.exports = ExtractionService;
 

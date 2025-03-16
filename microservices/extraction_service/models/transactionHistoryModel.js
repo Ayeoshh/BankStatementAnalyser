@@ -1,6 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../../../config/database');
 const UserDetails = require('./userDetailsModel');
+const moment = require('moment'); 
 
 const TransactionHistory = sequelize.define('TransactionHistory', {
     id: {
@@ -14,7 +15,26 @@ const TransactionHistory = sequelize.define('TransactionHistory', {
     },
     tranDate: {
         type: DataTypes.DATEONLY,
-        allowNull: false
+        allowNull: false,
+        set(value) {
+            // Convert any date format to ISO (YYYY-MM-DD)
+            if (value) {
+                const formattedDate = moment(value, [
+                    "DD-MM-YYYY",
+                    "MM-DD-YYYY",
+                    "YYYY/MM/DD",
+                    "DD/MM/YYYY",
+                    "MM/DD/YYYY",
+                    "YYYY-MM-DD"
+                ], true).format("YYYY-MM-DD");
+
+                if (!formattedDate || formattedDate === "Invalid date") {
+                    throw new Error(`Invalid date format: ${value}`);
+                }
+
+                this.setDataValue('tranDate', formattedDate);
+            }
+        }
     },
     chqNo: {
         type: DataTypes.STRING,
@@ -44,6 +64,14 @@ const TransactionHistory = sequelize.define('TransactionHistory', {
 // Define foreign key relationship
 TransactionHistory.belongsTo(UserDetails, { foreignKey: 'customerId', targetKey: 'customerId' });
 UserDetails.hasMany(TransactionHistory, { foreignKey: 'customerId', sourceKey: 'customerId', onDelete: 'CASCADE'});
+
+sequelize.sync({ force: false }) // Use force: true to drop and recreate tables (Be Careful!)
+  .then(() => {
+    console.log("Database & tables created!");
+  })
+  .catch(error => {
+    console.error("Error syncing database:", error);
+  });
 
 
 module.exports = TransactionHistory;

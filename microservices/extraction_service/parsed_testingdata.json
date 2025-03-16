@@ -20,7 +20,7 @@
       "tranDate": "03-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2A/461339307444/HARSHIT RATHORE\n/UPI/Punjab National Bank",
-      "debit": 2229.00,
+      "debit": 2229,
       "credit": null,
       "balance": 94511.21823
     },
@@ -28,7 +28,7 @@
       "tranDate": "03-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/461383927240/AMAAN SO MOHD\nIQRAM  /UPI/Yes Bank Ltd",
-      "debit": 90.00,
+      "debit": 90,
       "credit": null,
       "balance": 94421.21823
     },
@@ -36,7 +36,7 @@
       "tranDate": "03-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/424765331631/Bajrang Sweets\n/UPI/Yes Bank Ltd",
-      "debit": 20.00,
+      "debit": 20,
       "credit": null,
       "balance": 94401.21823
     },
@@ -44,7 +44,7 @@
       "tranDate": "04-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/424832835379/Google Pl/Axis\nBank/MandateE//P2V/",
-      "debit": 129.00,
+      "debit": 129,
       "credit": null,
       "balance": 94272.21823
     },
@@ -52,7 +52,7 @@
       "tranDate": "04-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/424807299458/UP 16 TOUR AND\nTRAVEL/Mercha/Bank of India",
-      "debit": 200.00,
+      "debit": 200,
       "credit": null,
       "balance": 94072.21823
     },
@@ -60,7 +60,7 @@
       "tranDate": "05-09-2024",
       "chqNo": null,
       "particulars": "ACH-DR-Groww Pay Services P-\nCWD4GM3FVISV-UTIB7010",
-      "debit": 2000.00,
+      "debit": 2000,
       "credit": null,
       "balance": 92072.21823
     },
@@ -68,7 +68,7 @@
       "tranDate": "05-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/424928305827/SWEETS   TREATS\n/UPI/Yes Bank Ltd",
-      "debit": 30.00,
+      "debit": 30,
       "credit": null,
       "balance": 92042.21823
     },
@@ -84,7 +84,7 @@
       "tranDate": "05-09-2024",
       "chqNo": null,
       "particulars": "UPI/P2M/461586253714/MakeMyTrip\n/Payvia/HDFC BANK LTD",
-      "debit": 1145.40,
+      "debit": 1145.4,
       "credit": null,
       "balance": 89632.76823
     },
@@ -92,16 +92,15 @@
       "tranDate": "06-09-2024",
       "chqNo": null,
       "particulars": "ACH-DR-Groww Pay Services P-\n7376EH5OF4RJ-UTIB7010",
-      "debit": 2000.00,
+      "debit": 2000,
       "credit": null,
       "balance": 87632.76823
     },
-
     {
       "tranDate": "27-02-2025",
       "chqNo": null,
       "particulars": "UPI/P2A/542478818843/CHEF'S BIRYANI\nHOUSE /UPI/State Bank of India",
-      "debit": 335.00,
+      "debit": 335,
       "credit": null,
       "balance": 67535.95823
     },
@@ -109,7 +108,7 @@
       "tranDate": "27-02-2025",
       "chqNo": null,
       "particulars": "ATM-CASH/BO\nMCLEODGANJ/SHIMLA/270225",
-      "debit": 5000.00,
+      "debit": 5000,
       "credit": null,
       "balance": 62535.95823
     },
@@ -117,7 +116,7 @@
       "tranDate": "28-02-2025",
       "chqNo": null,
       "particulars": "UPI/P2M/542514968392/makemytrip\n/UPI/ICICI Bank",
-      "debit": 1281.00,
+      "debit": 1281,
       "credit": null,
       "balance": 61254.95823
     },
@@ -125,7 +124,7 @@
       "tranDate": "01-03-2025",
       "chqNo": null,
       "particulars": "UPI/P2M/506054129101/HEENA CAFE\n/UPI/YES BANK LIMITED YBS",
-      "debit": 810.00,
+      "debit": 810,
       "credit": null,
       "balance": 60444.95823
     },
@@ -133,7 +132,7 @@
       "tranDate": "01-03-2025",
       "chqNo": null,
       "particulars": "UPI/P2A/506004459180/MRINAL KUMAR PAL\n/UPI/HDFC BANK LTD",
-      "debit": 16500.00,
+      "debit": 16500,
       "credit": null,
       "balance": 43944.95823
     }
@@ -144,5 +143,3 @@
   "transactionTotalCredit": 1463777.52,
   "branchAddress": "AXIS BANK LTD, SHAHJAHANPUR [UP], 15, 16, OPP PWD, GUEST, CIVIL LINES, KUTCHEHRY,  ,  242001,\nSHAHJAHANPUR,  UTTAR PRADESH, INDIA, TEL:05842-281292/281293"
 }
-
-

@@ -7,8 +7,12 @@ class ExtractionController{
                 return res.status(400).json({message: 'No file uploaded'});
             }
 
-            const extractedText = await ExtractionService.extractTextFromPdf(req.file);
-            const parsedData = await ExtractionService.parseDataWithGemini(extractedText);
+            const extractedText = await ExtractionService.extractTextFromPdf(req.file.buffer);
+            // console.log(extractedText)
+            // const parsedData = await ExtractionService.parseDataWithGemini(extractedText);
+            // const savedFilePath = await ExtractionService.saveExtractedData(parsedData);
+            const parsedData = require('../../../pdfanalyser/parsed_data');
+            // console.log(parsedData)
             const savedFilePath = await ExtractionService.saveExtractedData(parsedData);
 
             res.status(200).json({

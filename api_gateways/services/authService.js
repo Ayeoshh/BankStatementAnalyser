@@ -40,13 +40,14 @@ class AuthServices{
     }
     static async loginUser(email, password){
         try{ 
+            console.log(email, password);
             const user = await User.findOne({where: {email}});
             if(!user){
                 throw new Error('Invalid credentials');
             }
 
             // compare password
-            const isMatch = await bcrypt.compare(password, user.passwords);
+            const isMatch = await bcrypt.compare(password, user.password);
             if(!isMatch){
                 throw new Error('Invalid credentials');
             }
