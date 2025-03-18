@@ -2,6 +2,7 @@ const ExtractionService = require('../services/extractionService');
 
 class ExtractionController{
     async extractAndSave(req, res){
+        console.log("reached MS extraction controller**************");
         try{
             if(!req.file){
                 return res.status(400).json({message: 'No file uploaded'});

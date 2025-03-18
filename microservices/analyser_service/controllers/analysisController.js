@@ -3,7 +3,7 @@ const AnalysisService = require('../services/analysisService');
 class AnalysisController{
     async getAnalysis(req, res){
         try{
-            const {customerId} = req.params;
+            const {customerId} = req.body;
             if(!customerId){
                 return res.status(400).json({message: 'Customer ID is required'});
             }

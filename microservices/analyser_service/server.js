@@ -11,7 +11,7 @@ dotenv.config({path: '../../.env'});
 const PORT = 5002;
 
 const analysisRoutes = require('./routes/analysisRoutes');
-
+console.log("reached analyser microservice***********")
 app.use('/analysis', analysisRoutes);
 
 app.use((req, res, next)=>{
